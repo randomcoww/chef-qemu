@@ -1,0 +1,7 @@
+name             'qemu'
+maintainer       'YOUR_NAME'
+maintainer_email 'YOUR_EMAIL'
+license          'All rights reserved'
+description      'Installs/Configures qemu'
+long_description 'Installs/Configures qemu'
+version          '0.1.0'
