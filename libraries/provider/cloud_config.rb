@@ -6,9 +6,6 @@ class ChefQemu
       def load_current_resource
         @current_resource = ChefQemu::Resource::CloudConfig.new(new_resource.name)
 
-        current_resource.user_data_path(::File.join(new_resource.path, 'user-data'))
-        current_resource.meta_data_path(::File.join(new_resource.path, 'meta-data'))
-
         if ::File.exist?(current_resource.user_data_path)
           current_resource.user_data_config(::File.read(current_resource.user_data_path).chomp)
         end
