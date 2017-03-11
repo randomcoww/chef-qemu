@@ -1,7 +1,7 @@
 class ChefQemu
   class Resource
     class Libvirt < Chef::Resource
-      include ConfigGenerator
+      include LibvirtConfig
 
       resource_name :qemu_libvirt
 
