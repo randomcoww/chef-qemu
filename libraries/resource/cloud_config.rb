@@ -10,16 +10,10 @@ class ChefQemu
       property :path, String
       property :config, Hash
 
+      property :user_data_path, String
+      property :meta_data_path, String
       property :user_data_config, String, default: lazy { generate_user_data_config }
       property :meta_data_config, String, default: lazy { generate_meta_data_config }
-
-      def user_data_path
-        ::File.join(path, 'user-data')
-      end
-
-      def meta_data_path
-        ::File.join(path, 'meta-data')
-      end
 
       private
 
