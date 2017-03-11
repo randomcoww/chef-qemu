@@ -45,13 +45,13 @@ class ChefQemu
 
       def user_data
         @user_data_config ||= Chef::Resource::File.new(current_resource.user_data_path, run_context).tap do |r|
-          r.content current_resource.user_data_config
+          r.content new_resource.user_data_config
         end
       end
 
       def meta_data
         @meta_data_config ||= Chef::Resource::File.new(current_resource.meta_data_path, run_context).tap do |r|
-          r.content current_resource.meta_data_config
+          r.content new_resource.meta_data_config
         end
       end
     end
