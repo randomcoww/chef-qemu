@@ -1,7 +1,7 @@
 class ChefQemu
   class Resource
     class CloudConfig < Chef::Resource
-      resource_name :qemu_cloud_init
+      resource_name :qemu_cloud_config
 
       default_action :create
       allowed_actions :create, :delete
