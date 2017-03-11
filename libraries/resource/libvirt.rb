@@ -8,8 +8,8 @@ class ChefQemu
       default_action :define
       allowed_actions :shutdown, :undefine, :define, :start, :autostart, :recreate
 
-      property :xml, String, default: lazy { to_conf }
       property :config, Hash
+      property :xml, String, default: lazy { to_conf }
       property :domain, Object
       property :timeout, Integer, default: 60
 
