@@ -32,9 +32,10 @@ class ChefQemu
         if !current_resource.user_data_config.nil? ||
           !current_resource.meta_data_config.nil?
 
-        converge_by("Delete cloud-config: #{new_resource}") do
-          meta_data.run_action(:delete)
-          user_data.run_action(:delete)
+          converge_by("Delete cloud-config: #{new_resource}") do
+            meta_data.run_action(:delete)
+            user_data.run_action(:delete)
+          end
         end
       end
 
