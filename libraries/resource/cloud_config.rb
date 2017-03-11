@@ -1,7 +1,7 @@
 class ChefQemu
   class Resource
     class CloudConfig < Chef::Resource
-      require CloudConfigHelper
+      include CloudConfigHelper
 
       resource_name :qemu_cloud_config
 
