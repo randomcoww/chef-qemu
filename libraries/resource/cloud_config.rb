@@ -10,18 +10,26 @@ class ChefQemu
       property :path, String
       property :config, Hash
 
-      property :user_data_path, String, default: lazy { ::File.join(path, 'user-data') }
-      property :user_data_config, String, default: lazy { generate_user_data }
-      property :meta_data_path, String, default: lazy { ::File.join(path, 'meta-data') }
-      property :meta_data_config, String, default: lazy { generate_meta_data }
+      property :user_data_path, String, default: lazy { generate_user_data_path }
+      property :user_data_config, String, default: lazy { generate_user_data_config }
+      property :meta_data_path, String, default: lazy { generate_meta_data_path }
+      property :meta_data_config, String, default: lazy { generate_meta_data_config }
 
       private
 
-      def generate_user_data
+      def generate_user_data_path
+        ::File.join(path, 'user-data')
+      end
+
+      def generate_meta_data_path
+        ::File.join(path, 'meta-data')
+      end
+
+      def generate_user_data_config
         ['#cloud-config', config.to_yml].join($/)
       end
 
-      def generate_meta_data
+      def generate_meta_data_config
         {
           'instance-id' => "iid-#{hostname}",
           'hostname' => hostname,
