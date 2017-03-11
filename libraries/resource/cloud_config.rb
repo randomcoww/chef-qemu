@@ -1,8 +1,6 @@
 class ChefQemu
   class Resource
     class CloudConfig < Chef::Resource
-      include CloudConfigHelper
-
       resource_name :qemu_cloud_config
 
       default_action :create
@@ -12,9 +10,9 @@ class ChefQemu
       property :path, String
       property :config, Hash
 
-      property :user_data_path, String, default: lazy { ::File.join(path, CloudConfigHelper::USER_DATA) }
+      property :user_data_path, String, default: lazy { ::File.join(path, 'user-data') }
       property :user_data_config, String, default: lazy { generate_user_data }
-      property :meta_data_path, String, default: lazy { ::File.join(path, CloudConfigHelper::META_DATA) }
+      property :meta_data_path, String, default: lazy { ::File.join(path, 'meta-data') }
       property :meta_data_config, String, default: lazy { generate_meta_data }
 
       private
