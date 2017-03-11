@@ -18,7 +18,7 @@ class ChefQemu
       private
 
       def generate_user_data_config
-        ['#cloud-config', config.to_yml].join($/)
+        ['#cloud-config', config.to_hash.to_yaml].join($/)
       end
 
       def generate_meta_data_config
