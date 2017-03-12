@@ -48,10 +48,14 @@ module LibvirtWrapper
 
     def active?
       valid? && domain.active?
+    rescue
+      false
     end
 
     def autostart?
       valid? && domain.autostart
+    rescue
+      false
     end
 
 
