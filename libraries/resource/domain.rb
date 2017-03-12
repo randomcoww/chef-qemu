@@ -1,9 +1,9 @@
 class ChefQemu
   class Resource
-    class Libvirt < Chef::Resource
+    class Domain < Chef::Resource
       include ConfigGenerator
 
-      resource_name :qemu_libvirt
+      resource_name :qemu_domain
 
       default_action :define
       allowed_actions :shutdown, :undefine, :define, :start, :autostart, :recreate

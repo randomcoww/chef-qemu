@@ -1,5 +1,5 @@
-module LibvirtHelper
-  class Domain
+module Qemu
+  class LibvirtDomain
     attr_reader :conn, :domain
 
     require 'libvirt'
