@@ -12,9 +12,15 @@ class ChefQemu
         current_resource
       end
 
+      def action_recreate
+        action_undefine
+        action_start
+        action_autostart
+      end
+
       def action_shutdown
         domain = current_resource.domain
-        if !domain.nil? && domain.active?
+        if domain.active?
           converge_by("Shutdown domain: #{new_resource}") do
             domain.set_autostart(false)
             domain.shutdown_or_destroy(new_resource.timeout)
@@ -22,15 +28,9 @@ class ChefQemu
         end
       end
 
-      def action_recreate
-        action_undefine
-        action_start
-        action_autostart
-      end
-
       def action_undefine
         domain = current_resource.domain
-        if !domain.nil?
+        if domain.valid?
           converge_by("Undefine domain: #{new_resource}") do
             domain.set_autostart(false)
             domain.shutdown_and_undefine(new_resource.timeout)
@@ -39,7 +39,7 @@ class ChefQemu
       end
 
       def action_define
-        if current_resource.domain.nil?
+        if !current_resource.domain.valid?
           converge_by("Define domain: #{new_resource}") do
             LibvirtDomain.define_from_xml(new_resource.xml)
           end
@@ -47,7 +47,7 @@ class ChefQemu
       end
 
       def action_start
-        if current_resource.domain.nil? || !current_resource.domain.active?
+        if !current_resource.domain.active?
           converge_by("Start domain: #{new_resource}") do
             domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
             domain.start(new_resource.timeout)
@@ -56,7 +56,7 @@ class ChefQemu
       end
 
       def action_autostart
-        if current_resource.domain.nil? || !current_resource.domain.autostart?
+        if !current_resource.domain.autostart?
           converge_by("Set domain autostart: #{new_resource}") do
             domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
             domain.set_autostart(true)

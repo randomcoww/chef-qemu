@@ -9,12 +9,17 @@ module LibvirtWrapper
       @domain = domain
     end
 
-    def self.get(name)
+    def self.get_by_name(name)
       d = conn.lookup_domain_by_name(name)
       new(d, conn)
     rescue
       nil
     end
+
+    # def self.get_by_uuid(uuid)
+    #   domain = conn.lookup_domain_by_uuid(uuid)
+    #   new(domain, conn)
+    # end
 
     def self.define_from_xml(s)
       d = conn.define_domain_xml(s)
@@ -22,26 +27,41 @@ module LibvirtWrapper
     end
 
     def self.get_or_define_from_xml(s)
-      get_domain_from_error {
+      domain_from_error {
         define_from_xml(s)
       }
     end
 
+    def self.get_all
+      conn.list_all_domains.map do |d|
+        new(d, conn)
+      end
+    end
+
+
+
+    def valid?
+      !domain.nil? && !domain.uuid.nil?
+    rescue
+      false
+    end
+
     def active?
-      domain.active?
+      valid? && domain.active?
     end
 
     def autostart?
-      domain.autostart
+      valid? && domain.autostart
     end
 
+
+
     def shutdown_or_destroy(timeout)
-      return true if !active?
       call_shutdown
 
       if check_with_timeout(timeout) { !active? }
         return true
-      else
+      elsif active?
         call_destroy
         if check_with_timeout(timeout) { !active? }
           return true
@@ -51,8 +71,7 @@ module LibvirtWrapper
     end
 
     def start(timeout)
-      return true if active?
-      call_start
+      call_start if valid?
 
       if check_with_timeout(timeout) { active? }
         return true
@@ -61,12 +80,12 @@ module LibvirtWrapper
     end
 
     def shutdown_and_undefine(timeout)
-      shutdown_or_destroy(timeout) if active?
-      call_undefine if !active?
+      shutdown_or_destroy(timeout)
+      call_undefine if valid?
     end
 
     def set_autostart(bool)
-      domain.autostart = !!bool
+      call_autostart(bool) if valid?
     end
 
 
@@ -78,29 +97,22 @@ module LibvirtWrapper
       Libvirt::open('qemu:///system')
     end
 
-    def self.get_all
-      conn.list_all_domains.map do |dom|
-        new(domain, conn)
-      end
-    end
-
-    # def self.get_by_uuid(uuid)
-    #   domain = conn.lookup_domain_by_uuid(uuid)
-    #   new(domain, conn)
-    # end
-
-    def self.get_domain_from_error
+    def self.domain_from_error
       return yield
     rescue Libvirt::DefinitionError => e
       if e.message =~ /already exists/
         domain_name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
-        return get(domain_name)
+        return get_by_name(domain_name)
       end
       raise e
     end
 
     def call_start
       domain.create
+    end
+
+    def call_autostart(bool)
+      domain.autostart = !!bool
     end
 
     def call_shutdown
