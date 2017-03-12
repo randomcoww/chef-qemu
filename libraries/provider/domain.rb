@@ -32,6 +32,7 @@ class ChefQemu
         if current_resource.exists
           domain = current_resource.domain
           domain.autostart(false)
+          Chef::Log.info("shutdown #{domain.name}")
 
           if domain.active?
             converge_by("Shutdown domain: #{new_resource}") do
