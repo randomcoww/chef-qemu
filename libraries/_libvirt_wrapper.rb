@@ -41,19 +41,19 @@ module LibvirtWrapper
 
 
     def valid?
-      !domain.nil? && !domain.uuid.nil?
+      !domain.uuid.nil?
     rescue
       false
     end
 
     def active?
-      valid? && domain.active?
+      domain.active?
     rescue
       false
     end
 
     def autostart?
-      valid? && domain.autostart
+      domain.autostart
     rescue
       false
     end

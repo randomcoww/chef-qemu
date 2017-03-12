@@ -25,9 +25,6 @@ class ChefQemu
         if current_resource.user_data_config != new_resource.user_data_config ||
           current_resource.meta_data_config != new_resource.meta_data_config
 
-          Chef::Log.info(current_resource.user_data_config)
-          Chef::Log.info(new_resource.user_data_config)
-
           converge_by("Create cloud-config: #{new_resource}") do
             base_directory(:create_if_missing)
             meta_data.run_action(:create)
