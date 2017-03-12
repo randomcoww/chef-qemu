@@ -1,8 +1,6 @@
 class ChefQemu
   class Provider
     class Domain < Chef::Provider
-      include Qemu
-
       provides :qemu_domain, os: "linux"
 
       def load_current_resource
