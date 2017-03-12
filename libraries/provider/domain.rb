@@ -10,11 +10,10 @@ class ChefQemu
 
         begin
           current_resource.domain(LibvirtDomain.get_by_name(new_resource.name))
-          current_resource.exists(current_resource.domain.exists?)
         rescue Libvirt::RetrieveError
           current_resource.domain(nil)
-          current_resource.exists(false)
         end
+        current_resource.exists(current_resource.domain && current_resource.domain.exists?)
 
         current_resource
       end
