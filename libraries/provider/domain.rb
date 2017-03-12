@@ -7,7 +7,7 @@ class ChefQemu
 
       def load_current_resource
         @current_resource = ChefQemu::Resource::Domain.new(new_resource.name)
-        current_resource.domain(LibvirtDomain.get(new_resource.name))
+        current_resource.domain(LibvirtDomain.get_by_name(new_resource.name))
 
         current_resource
       end
