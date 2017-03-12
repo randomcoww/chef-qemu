@@ -10,26 +10,15 @@ module LibvirtWrapper
     end
 
     def self.get(name)
-      domain = conn.lookup_domain_by_name(name)
-      new(domain, conn)
+      d = conn.lookup_domain_by_name(name)
+      new(d, conn)
     rescue
       nil
     end
 
     def self.define_from_xml(s)
-      domain = conn.define_domain_xml(s)
-      new(domain, conn)
-    end
-
-    ## hack to get any domains that conflict with this config
-    ## try defining and undefine if successful
-    ## return conflicting domain from error
-    def self.get_current_from_xml(s)
-      get_domain_from_error {
-        domain = define_from_xml(s)
-        domain.call_undefine
-        nil
-      }
+      d = conn.define_domain_xml(s)
+      new(d, conn)
     end
 
     def self.get_or_define_from_xml(s)
