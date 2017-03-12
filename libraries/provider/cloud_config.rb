@@ -7,13 +7,13 @@ class ChefQemu
         @current_resource = ChefQemu::Resource::CloudConfig.new(new_resource.name)
 
         if ::File.exist?(new_resource.user_data_path)
-          current_resource.user_data_config(::File.read(new_resource.user_data_path).chomp)
+          current_resource.user_data_config(::File.read(new_resource.user_data_path))
         else
           current_resource.user_data_config('')
         end
 
         if ::File.exist?(new_resource.meta_data_path)
-          current_resource.meta_data_config(::File.read(new_resource.meta_data_path).chomp)
+          current_resource.meta_data_config(::File.read(new_resource.meta_data_path))
         else
           current_resource.meta_data_config('')
         end
