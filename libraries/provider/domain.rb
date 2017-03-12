@@ -17,7 +17,7 @@ class ChefQemu
         if !domain.nil? && domain.active?
           converge_by("Shutdown domain: #{new_resource}") do
             domain.set_autostart(false)
-            domain.shutdown_or_destroy(new_resource.shutdown_timeout)
+            domain.shutdown_or_destroy(new_resource.timeout)
           end
         end
       end
@@ -33,7 +33,7 @@ class ChefQemu
         if !domain.nil?
           converge_by("Undefine domain: #{new_resource}") do
             domain.set_autostart(false)
-            domain.shutdown_and_undefine(new_resource.shutdown_timeout)
+            domain.shutdown_and_undefine(new_resource.timeout)
           end
         end
       end
