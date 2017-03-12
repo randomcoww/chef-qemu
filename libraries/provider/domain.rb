@@ -18,6 +18,12 @@ class ChefQemu
         action_autostart
       end
 
+      def action_restart
+        action_shutdown
+        action_start
+        action_autostart
+      end
+
       def action_shutdown
         domain = current_resource.domain
         if domain && domain.active?

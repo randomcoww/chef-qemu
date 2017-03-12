@@ -6,7 +6,7 @@ class ChefQemu
       resource_name :qemu_domain
 
       default_action :define
-      allowed_actions :shutdown, :undefine, :define, :start, :autostart, :recreate
+      allowed_actions :shutdown, :undefine, :define, :start, :autostart, :restart, :recreate
 
       property :xml, String, default: lazy { to_conf }
       property :config, Hash
