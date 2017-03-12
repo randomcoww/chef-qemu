@@ -1,26 +1,40 @@
 module LibvirtWrapper
   class LibvirtDomain
+    attr_accessor :domain
+
     require 'libvirt'
 
+    def initialize(domain)
+      @domain = domain
+    end
+
     def self.get_by_name(name)
-      conn.lookup_domain_by_name(name)
-    rescue
-      nil
+      new(conn.lookup_domain_by_name(name))
     end
 
     def self.get_or_define_from_xml(s)
       domain_from_error {
-        conn.define_domain_xml(s)
+        new(conn.define_domain_xml(s))
       }
     end
 
+    def exists?
+      domain.uuid.present?
+    rescue
+      false
+    end
+
+    def active?
+      domain.active?
+    end
+
     def shutdown_or_destroy(timeout)
-      shutdown
+      domain.shutdown
 
       if check_with_timeout(timeout) { !active? }
         return true
       else
-        destroy
+        domain.destroy
         if check_with_timeout(timeout) { !active? }
           return true
         end
@@ -29,7 +43,7 @@ module LibvirtWrapper
     end
 
     def start(timeout)
-      create
+      domain.create
 
       if check_with_timeout(timeout) { active? }
         return true
@@ -50,8 +64,8 @@ module LibvirtWrapper
       return yield
     rescue Libvirt::DefinitionError => e
       if e.message =~ /already exists/
-        domain_name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
-        return conn.lookup_domain_by_name(domain_name)
+        name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
+        return new(conn.lookup_domain_by_name(name))
       end
     end
 

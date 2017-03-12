@@ -7,7 +7,9 @@ class ChefQemu
 
       def load_current_resource
         @current_resource = ChefQemu::Resource::Domain.new(new_resource.name)
+
         current_resource.domain(LibvirtDomain.get_by_name(new_resource.name))
+        current_resource.exists(current_resource.domain.exists?)
 
         current_resource
       end
@@ -23,8 +25,8 @@ class ChefQemu
       end
 
       def action_shutdown
-        domain = current_resource.domain
-        if domain
+        if current_resource.exists
+          domain = current_resource.domain
           domain.autostart = false
 
           if domain.active?
@@ -36,8 +38,8 @@ class ChefQemu
       end
 
       def action_undefine
-        domain = current_resource.domain
-        if domain
+        if current_resource.exists
+          domain = current_resource.domain
           domain.autostart = false
 
           converge_by("Undefine domain: #{new_resource}") do
