@@ -101,7 +101,7 @@ module LibvirtWrapper
     # end
 
     def self.get_domain_from_error
-      yield
+      return yield
     rescue Libvirt::DefinitionError => e
       if e.message =~ /already exists/
         domain_name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
