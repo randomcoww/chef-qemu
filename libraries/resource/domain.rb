@@ -1,16 +1,15 @@
 class ChefQemu
   class Resource
     class Domain < Chef::Resource
-      include ConfigGenerator
+      include LibvirtConfig
 
       resource_name :qemu_domain
 
       default_action :define
       allowed_actions :shutdown, :undefine, :define, :start, :autostart, :recreate
 
+      property :xml, String, default: lazy { to_conf }
       property :config, Hash
-      property :xml, String, desired_state: false,
-                              default: lazy { to_conf }
       property :domain, Object
       property :timeout, Integer, default: 60
 

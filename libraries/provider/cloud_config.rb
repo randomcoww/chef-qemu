@@ -6,11 +6,16 @@ class ChefQemu
       def load_current_resource
         @current_resource = ChefQemu::Resource::CloudConfig.new(new_resource.name)
 
-        if ::File.exist?(current_resource.user_data_path)
-          current_resource.user_data_config(::File.read(current_resource.user_data_path).chomp)
+        if ::File.exist?(new_resource.user_data_path)
+          current_resource.user_data_config(::File.read(new_resource.user_data_path).chomp)
+        else
+          current_resource.user_data_config('')
         end
-        if ::File.exist?(current_resource.meta_data_path)
-          current_resource.meta_data_config(::File.read(current_resource.meta_data_path).chomp)
+
+        if ::File.exist?(new_resource.meta_data_path)
+          current_resource.meta_data_config(::File.read(new_resource.meta_data_path).chomp)
+        else
+          current_resource.meta_data_config('')
         end
 
         current_resource
@@ -21,6 +26,7 @@ class ChefQemu
           current_resource.meta_data_config != new_resource.meta_data_config
 
           converge_by("Create cloud-config: #{new_resource}") do
+            base_directory(:create_if_missing)
             meta_data.run_action(:create)
             user_data.run_action(:create)
           end
@@ -40,14 +46,20 @@ class ChefQemu
 
       private
 
+      def base_directory(action)
+        Chef::Resource::Directory.new(new_resource.path, run_context).tap do |r|
+          r.recursive true
+        end.run_action(action)
+      end
+
       def user_data
-        @user_data_config ||= Chef::Resource::File.new(current_resource.user_data_path, run_context).tap do |r|
+        @user_data ||= Chef::Resource::File.new(new_resource.user_data_path, run_context).tap do |r|
           r.content new_resource.user_data_config
         end
       end
 
       def meta_data
-        @meta_data_config ||= Chef::Resource::File.new(current_resource.meta_data_path, run_context).tap do |r|
+        @meta_data ||= Chef::Resource::File.new(new_resource.meta_data_path, run_context).tap do |r|
           r.content new_resource.meta_data_config
         end
       end

@@ -5,7 +5,7 @@ class ChefQemu
 
       def load_current_resource
         @current_resource = ChefQemu::Resource::Domain.new(new_resource.name)
-        current_resource.domain(QemuHelper::LibvirtDomain.get_current_from_xml(current_resource.xml))
+        current_resource.domain(LibvirtDomain.get_current_from_xml(new_resource.xml))
 
         current_resource
       end
@@ -39,7 +39,7 @@ class ChefQemu
       def action_define
         if current_resource.domain.nil?
           converge_by("Define domain: #{new_resource}") do
-            QemuHelper::LibvirtDomain.define_from_xml(new_resource.xml)
+            LibvirtDomain.define_from_xml(new_resource.xml)
           end
         end
       end
@@ -47,7 +47,7 @@ class ChefQemu
       def action_start
         if current_resource.domain.nil? || !current_resource.domain.active?
           converge_by("Start domain: #{new_resource}") do
-            domain = QemuHelper::LibvirtDomain.get_or_define_from_xml(new_resource.xml)
+            domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
             domain.start(new_resource.timeout)
           end
         end
@@ -56,7 +56,7 @@ class ChefQemu
       def action_autostart
         if current_resource.domain.nil? || !current_resource.domain.autostart?
           converge_by("Set domain autostart: #{new_resource}") do
-            domain = QemuHelper::LibvirtDomain.get_or_define_from_xml(new_resource.xml)
+            domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
             domain.set_autostart(true)
           end
         end
