@@ -105,8 +105,9 @@ module LibvirtWrapper
     rescue Libvirt::DefinitionError => e
       if e.message =~ /already exists/
         domain_name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
-        get(domain_name)
+        return get(domain_name)
       end
+      raise e
     end
 
     def call_start
