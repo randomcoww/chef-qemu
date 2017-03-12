@@ -1,4 +1,4 @@
-module Qemu
+module QemuHelper
   class LibvirtDomain
     attr_reader :conn, :domain
 
