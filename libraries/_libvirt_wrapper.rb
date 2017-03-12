@@ -19,7 +19,7 @@ module LibvirtWrapper
     end
 
     def exists?
-      domain.uuid.present?
+      !domain.uuid.nil?
     rescue
       false
     end
