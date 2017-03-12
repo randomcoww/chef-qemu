@@ -8,8 +8,13 @@ class ChefQemu
       def load_current_resource
         @current_resource = ChefQemu::Resource::Domain.new(new_resource.name)
 
-        current_resource.domain(LibvirtDomain.get_by_name(new_resource.name))
-        current_resource.exists(current_resource.domain.exists?)
+        begin
+          current_resource.domain(LibvirtDomain.get_by_name(new_resource.name))
+          current_resource.exists(current_resource.domain.exists?)
+        rescue Libvirt::RetrieveError
+          current_resource.domain(nil)
+          current_resource.exists(false)
+        end
 
         current_resource
       end
@@ -53,7 +58,7 @@ class ChefQemu
       end
 
       def action_define
-        if !current_resource.domain
+        if !current_resource.exists
           converge_by("Define domain: #{new_resource}") do
             LibvirtDomain.get_or_define_from_xml(new_resource.xml)
           end
