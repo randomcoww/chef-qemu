@@ -6,12 +6,22 @@ class ChefQemu
       default_action :create
       allowed_actions :create, :delete
 
+      property :exists, [TrueClass, FalseClass]
       property :hostname, String
-      property :path, String
       property :config, Hash
+      property :path, String
 
-      property :user_data_config, String, default: lazy { generate_user_data }
-      property :meta_data_config, String, default: lazy { generate_meta_data }
+      property :user_data_content, String, default: lazy {
+        ['#cloud-config', config.to_hash.to_yaml].join($/)
+      }
+
+      property :meta_data_content, String, default: lazy {
+        {
+          'instance-id' => "iid-#{hostname}",
+          'hostname' => hostname,
+          'local-hostname' => hostname
+        }.to_yaml
+      }
 
       def user_data_path
         ::File.join(path, CloudInit::USER_DATA)
@@ -19,20 +29,6 @@ class ChefQemu
 
       def meta_data_path
         ::File.join(path, CloudInit::META_DATA)
-      end
-
-      private
-
-      def generate_user_data
-        ['#cloud-config', config.to_hash.to_yaml].join($/)
-      end
-
-      def generate_meta_data
-        {
-          'instance-id' => "iid-#{hostname}",
-          'hostname' => hostname,
-          'local-hostname' => hostname
-        }.to_yaml
       end
     end
   end
