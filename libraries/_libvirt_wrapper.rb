@@ -51,6 +51,10 @@ module LibvirtWrapper
       raise "Failed to start domain #{domain.name}"
     end
 
+    def autostart(bool)
+      domain.autostart = !!bool
+    end
+
 
 
 

@@ -27,7 +27,7 @@ class ChefQemu
       def action_shutdown
         if current_resource.exists
           domain = current_resource.domain
-          domain.autostart = false
+          domain.autostart(false)
 
           if domain.active?
             converge_by("Shutdown domain: #{new_resource}") do
@@ -40,7 +40,7 @@ class ChefQemu
       def action_undefine
         if current_resource.exists
           domain = current_resource.domain
-          domain.autostart = false
+          domain.autostart(false)
 
           converge_by("Undefine domain: #{new_resource}") do
             if domain.active?
@@ -62,7 +62,7 @@ class ChefQemu
 
       def action_start
         domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
-        domain.autostart = true
+        domain.autostart(true)
         if !domain.active?
           converge_by("Start domain: #{new_resource}") do
             domain.start(new_resource.timeout)
