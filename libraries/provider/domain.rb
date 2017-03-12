@@ -4,7 +4,7 @@ class ChefQemu
       provides :qemu_domain, os: "linux"
 
       def load_current_resource
-        @current_resource = ChefQemu::Resource::Libvirt.new(new_resource.name)
+        @current_resource = ChefQemu::Resource::Domain.new(new_resource.name)
         current_resource.domain(LibvirtDomain.get_current_from_xml(current_resource.xml))
 
         current_resource
