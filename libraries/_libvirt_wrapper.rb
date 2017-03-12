@@ -27,7 +27,7 @@ module LibvirtWrapper
     def self.get_current_from_xml(s)
       get_domain_from_error {
         domain = define_from_xml(s)
-        domain.undefine
+        domain.call_undefine
         nil
       }
     end
