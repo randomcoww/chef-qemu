@@ -15,57 +15,55 @@ class ChefQemu
       def action_recreate
         action_undefine
         action_start
-        action_autostart
       end
 
       def action_restart
         action_shutdown
         action_start
-        action_autostart
       end
 
       def action_shutdown
         domain = current_resource.domain
-        if domain && domain.active?
-          converge_by("Shutdown domain: #{new_resource}") do
-            domain.set_autostart(false)
-            domain.shutdown_or_destroy(new_resource.timeout)
+        if domain
+          domain.autostart = false
+
+          if domain.active?
+            converge_by("Shutdown domain: #{new_resource}") do
+              domain.shutdown_or_destroy(new_resource.timeout)
+            end
           end
         end
       end
 
       def action_undefine
         domain = current_resource.domain
-        if domain && domain.valid?
+        if domain
+          domain.autostart = false
+
           converge_by("Undefine domain: #{new_resource}") do
-            domain.set_autostart(false)
-            domain.shutdown_and_undefine(new_resource.timeout)
+            if domain.active?
+              domain.shutdown_or_destroy(new_resource.timeout)
+            end
+            # http://www.libvirt.org/html/libvirt-libvirt-domain.html#virDomainUndefineFlagsValues
+            domain.undefine(7)
           end
         end
       end
 
       def action_define
-        if !current_resource.domain || !current_resource.domain.valid?
+        if !current_resource.domain
           converge_by("Define domain: #{new_resource}") do
-            LibvirtDomain.define_from_xml(new_resource.xml)
+            LibvirtDomain.get_or_define_from_xml(new_resource.xml)
           end
         end
       end
 
       def action_start
-        if !current_resource.domain || !current_resource.domain.active?
+        domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
+        domain.autostart = true
+        if !domain.active?
           converge_by("Start domain: #{new_resource}") do
-            domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
             domain.start(new_resource.timeout)
-          end
-        end
-      end
-
-      def action_autostart
-        if !current_resource.domain.autostart?
-          converge_by("Set domain autostart: #{new_resource}") do
-            domain = LibvirtDomain.get_or_define_from_xml(new_resource.xml)
-            domain.set_autostart(true)
           end
         end
       end
