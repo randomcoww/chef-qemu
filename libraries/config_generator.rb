@@ -1,4 +1,4 @@
-module LibvirtConfig
+module ConfigGenerator
   require 'nokogiri'
 
   ## sample source
