@@ -58,7 +58,6 @@ module Qemu
           return true
         end
       end
-    else
       raise "Failed to stop domain #{domain.name}"
     end
 
