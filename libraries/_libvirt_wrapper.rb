@@ -70,6 +70,8 @@ module LibvirtWrapper
       if e.message =~ /already exists/
         name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
         return new(conn.lookup_domain_by_name(name))
+      else
+        raise e
       end
     end
 
