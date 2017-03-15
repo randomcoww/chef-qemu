@@ -32,21 +32,21 @@ class ChefQemu
       def meta_data_path
         ::File.join(path, CloudInit::META_DATA)
       end
-    end
 
-    private
+      private
 
-    def to_conf
-      content = config.to_hash.dup
-      content['write_files'] ||= []
+      def to_conf
+        content = config.to_hash.dup
+        content['write_files'] ||= []
 
-      systemd_hash.each do |path, unit|
-        content['write_files'] << {
-          "path" => path,
-          "content" => to_ini(unit)
-        }
+        systemd_hash.each do |path, unit|
+          content['write_files'] << {
+            "path" => path,
+            "content" => to_ini(unit)
+          }
+        end
+        ['#cloud-config', content.to_yaml].join($/)
       end
-      ['#cloud-config', content.to_yaml].join($/)
     end
   end
 end
