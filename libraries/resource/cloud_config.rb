@@ -1,7 +1,7 @@
 class ChefQemu
   class Resource
     class CloudConfig < Chef::Resource
-      require CloudInit
+      include CloudInit
 
       resource_name :qemu_cloud_config
 
