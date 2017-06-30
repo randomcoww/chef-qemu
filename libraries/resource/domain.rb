@@ -19,7 +19,7 @@ class ChefQemu
       def to_conf
         hash = config.to_hash.dup
         hash['domain']['name'] = name
-        generate_config(hash)
+        ConfigGenerator.generate_from_hash(hash)
       end
     end
   end
