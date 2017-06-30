@@ -225,7 +225,7 @@ module LibvirtConfig
     #   }
     # }
 
-    def self.generate_config(config_hash)
+    def self.generate_from_hash(config_hash)
       g = new
 
       builder = Nokogiri::XML::Builder.new do |xml|

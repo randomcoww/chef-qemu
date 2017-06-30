@@ -43,7 +43,7 @@ class ChefQemu
         systemd_hash.each do |path, unit|
           content['write_files'] << {
             "path" => path,
-            "content" => to_ini(unit)
+            "content" => SystemdHelper::ConfigGenerator.generate_from_hash(unit)
           }
         end
         ['#cloud-config', content.to_yaml].join($/)
