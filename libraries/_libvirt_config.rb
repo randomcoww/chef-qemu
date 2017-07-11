@@ -1,6 +1,4 @@
 module LibvirtConfig
-  require 'nokogiri'
-
   class ConfigGenerator
 
     ## sample source
@@ -226,6 +224,8 @@ module LibvirtConfig
     # }
 
     def self.generate_from_hash(config_hash)
+      require 'nokogiri'
+
       g = new
 
       builder = Nokogiri::XML::Builder.new do |xml|
