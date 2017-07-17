@@ -2,7 +2,7 @@ module LibvirtWrapper
   class LibvirtDomain
     attr_accessor :domain
 
-    require 'libvirt'
+    # require 'libvirt'
 
     def initialize(domain)
       @domain = domain
@@ -61,6 +61,8 @@ module LibvirtWrapper
     private
 
     def self.conn
+      require 'libvirt'
+
       Libvirt::open('qemu:///system')
     end
 
