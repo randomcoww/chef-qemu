@@ -1,8 +1,21 @@
 module LibvirtWrapper
-  class LibvirtDomain
-    attr_accessor :domain
+  class LibvirtConn
 
-    # require 'libvirt'
+    private
+
+    def self.conn
+      require 'libvirt'
+
+      Libvirt::open('qemu:///system')
+    end
+  end
+
+
+  ##
+  ## domains
+  ##
+  class LibvirtDomain < LibvirtConn
+    attr_accessor :domain
 
     def initialize(domain)
       @domain = domain
@@ -56,22 +69,14 @@ module LibvirtWrapper
     end
 
 
-
-
     private
-
-    def self.conn
-      require 'libvirt'
-
-      Libvirt::open('qemu:///system')
-    end
 
     def self.domain_from_error
       return yield
     rescue Libvirt::DefinitionError => e
       if e.message =~ /already exists/
-        name = e.message.gsub(/.*? domain '(.*?)' already exists .*/, '\1')
-        return new(conn.lookup_domain_by_name(name))
+        uuid = e.message.gsub(/.*? already exists with uuid (.+)$/, '\1')
+        return new(conn.lookup_domain_by_uuid(uuid))
       else
         raise e
       end
@@ -86,6 +91,60 @@ module LibvirtWrapper
       }
     rescue Timeout::Error
       return false
+    end
+  end
+
+
+  ##
+  ## domains
+  ##
+  class LibvirtNetwork < LibvirtConn
+    attr_accessor :network
+
+    def initialize(network)
+      @network = network
+    end
+
+    def self.get_by_name(name)
+      new(conn.lookup_network_by_name(name))
+    end
+
+    def self.get_or_define_from_xml(s)
+      network_from_error {
+        new(conn.define_network_xml(s))
+      }
+    end
+
+    def exists?
+      !network.uuid.nil?
+    rescue
+      false
+    end
+
+    def active?
+      network.active?
+    end
+
+    def start
+      network.create
+    end
+
+    def autostart(bool)
+      network.autostart = !!bool
+    end
+
+
+    private
+
+    def self.network_from_error
+      return yield
+    rescue Libvirt::DefinitionError => e
+      if e.message =~ /already exists/
+        uuid = e.message.gsub(/.*? already exists with uuid (.+)$/, '\1')
+        return new(conn.lookup_network_by_uuid(uuid))
+      else
+        raise e
+      end
     end
   end
 end
