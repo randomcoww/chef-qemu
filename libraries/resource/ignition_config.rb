@@ -34,7 +34,7 @@ class ChefQemu
                 "path" => f['path'],
                 "mode" => f['mode'],
                 "contents" => {
-                  "sources" => "data:,#{f['contents']}"
+                  "source" => f['contents']
                 }
               }
             }
@@ -50,12 +50,13 @@ class ChefQemu
           "systemd" => {
             "units" => systemd.map { |e|
               {
+                "enabled" => true,
                 "name" => "#{e['name']}.service",
                 "contents" => SystemdHelper::ConfigGenerator.generate_from_hash(e['contents'])
               }
             } + systemd_dropins.map { |e|
               {
-                "enable" => true,
+                "enabled" => true,
                 'dropins' => {
                   "name" => "#{e['name']}.service",
                   "contents" => SystemdHelper::ConfigGenerator.generate_from_hash(e['contents'])
