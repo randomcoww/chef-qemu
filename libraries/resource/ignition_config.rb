@@ -11,7 +11,6 @@ class ChefQemu
 
       property :networkd, Array, default: []
       property :systemd, Array, default: []
-      property :systemd_dropins, Array, default: []
       property :files, Array, default: []
       property :base, Hash, default: {}
 
@@ -49,19 +48,26 @@ class ChefQemu
           },
           "systemd" => {
             "units" => systemd.map { |e|
-              {
+
+              u = {
                 "enabled" => true,
                 "name" => "#{e['name']}.service",
-                "contents" => SystemdHelper::ConfigGenerator.generate_from_hash(e['contents'])
               }
-            } + systemd_dropins.map { |e|
-              {
-                "enabled" => true,
-                'dropins' => {
-                  "name" => "#{e['name']}.service",
-                  "contents" => SystemdHelper::ConfigGenerator.generate_from_hash(e['contents'])
+
+              if e['contents'].is_a?(Hash)
+                u["contents"] = SystemdHelper::ConfigGenerator.generate_from_hash(e['contents'])
+              end
+
+              if e['dropins'].is_a?(Array)
+                u["dropins"] = e['dropins'].map { |d|
+                  {
+                    "name" => "#{d['name']}.conf",
+                    "contents" => SystemdHelper::ConfigGenerator.generate_from_hash(d['contents'])
+                  }
                 }
-              }
+              end
+
+              u
             }
           }
         })
