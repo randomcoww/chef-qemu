@@ -25,6 +25,12 @@ module LibvirtWrapper
       new(conn.lookup_domain_by_name(name))
     end
 
+    def self.get_all_domains
+      conn.list_all_domains.map do |d|
+        new(d)
+      end
+    end
+
     def self.get_or_define_from_xml(s)
       domain_from_error {
         new(conn.define_domain_xml(s))
@@ -39,6 +45,10 @@ module LibvirtWrapper
 
     def active?
       domain.active?
+    end
+
+    def name
+      domain.name
     end
 
     def shutdown_or_destroy(timeout)
